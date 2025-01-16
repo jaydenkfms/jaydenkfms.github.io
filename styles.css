@@ -1,0 +1,319 @@
+body {
+    margin: 0px;
+    padding: 0px;
+    color: white;
+    height: 100%;
+    font-family: "Lato", serif;
+}
+
+#container {
+    width: 960px;
+    height: 540px;
+    padding: 30px;
+    box-sizing: border-box;
+    text-align: center;
+    justify-content: center;
+    align-content:center;
+    min-height: 100vh;
+    background-image: url('background.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+
+#container a {
+    margin-bottom: 20px;
+    display:inline-block;
+}
+
+#container h1 {
+    font-family: "Lato", serif;
+    margin-top: 8px;
+    opacity:0;
+    padding-bottom: 55px;
+    pointer-events:none;
+}
+
+.grid {
+    width:450px;
+    display: grid;
+    margin:0 auto;
+    justify-content: center;
+    align-content:center;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px;
+    column-gap: 5px;
+}
+
+.box {
+    position: relative; /* Ensure relative positioning for pseudo-element placement */
+    width: 110px;
+    height: 110px;
+    background: url('kate.jpg') no-repeat center center;
+    background-size: cover;
+    border: 2px solid #000;
+    cursor: pointer;
+}
+
+.box::after {
+    content: ''; /* Create the overlay */
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: transparent; /* Start with no overlay */
+    opacity: 0; /* Fully transparent initially */
+    z-index: 1; /* Ensure it is above the box content */
+    transition: background-color 0.3s ease, opacity 0.3s ease;
+}
+
+.box.correct::after {
+    background-color: rgba(0, 255, 0, 0.5); /* Green overlay for correct box */
+    opacity: 1; /* Make overlay visible */
+}
+
+.box.wrong::after {
+    background-color: rgba(255, 0, 0, 0.5); /* Red overlay for wrong box */
+    opacity: 1; /* Make overlay visible */
+}
+
+.box.revealed::after {
+    background-color: rgba(255, 223, 0, 0.5); /* Yellow overlay for revealed box */
+    opacity: 1; /* Make overlay visible */
+}
+
+/* General Modal Styles */
+#overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); /* Black translucent background */
+    display: none; /* Hidden by default */
+    z-index: 10; /* Ensure it is behind the modals */
+}
+
+#instructionModal, #congratulationsModal, #writeUpModal, #questionModal, #confirmationModal, #notificationModal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 0 100px 100px rgba(0, 0, 0, 0.5); /* Larger shadow to fill container */
+    width: 80%;
+    max-width: 500px;
+    z-index: 20; /* Ensure it appears above the overlay */
+    display: none; /* Hidden by default */
+}
+
+#notificationContent {
+    text-align: center; /* Center align the content including the button */
+}
+
+#notificationContent button {
+    background-color: white; /* White background */
+    font-family: "Lato", sans-serif;
+    color: #c938ff; /* Purple text */
+    border: 2px solid #c938ff; /* Purple border */
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 50px;
+    cursor: pointer;
+    margin: 20px auto; /* Center the button horizontally */
+    display: block; /* Ensures the margin: auto works */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for the button */
+}
+
+#notificationContent button:hover {
+    background-color: #c938ff; /* Purple background on hover */
+    color: white; /* White text on hover */
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2); /* Darker shadow on hover */
+}
+
+#confirmationModal {
+    max-width: 400px;
+    color:black
+}
+
+#writeUpModal, #questionModal {
+    max-height: 70vh; 
+    overflow-y: auto; 
+}
+
+/* Modal Content */
+#writeUpContent, #optionsContainer {
+    margin-bottom: 20px;
+}
+
+/* Buttons */
+#instructionContent button, #congratulationsContent button, #confirmationContent button, #nextButton {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: white; /* White background */
+    font-family: "Lato", sans-serif;
+    color: #c938ff; /* Purple text */
+    border: 2px solid #c938ff; /* Purple border */
+    font-size: 16px;
+    border-radius: 50px; /* Rounded corners */
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease; /* Smooth transition for hover effect */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+#instructionContent button:hover, #congratulationsContent button:hover, #confirmationContent button:hover, #nextButton:hover {
+    background-color: #c938ff; /* Purple background on hover */
+    color: white; /* White text on hover */
+    transform: scale(1.05); /* Slight scale effect on hover */
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2); /* Darker shadow on hover */
+}
+
+#confirmationContent button:nth-child(2) {
+    background-color: white; /* White background for cancel button */
+    border-color: #f44336; /* Red border */
+    color: #f44336; /* Red text */
+}
+
+#confirmationContent button:nth-child(2):hover {
+    background-color: #f44336; /* Red background on hover */
+    color: white; /* White text on hover */
+    transform: scale(1.05); /* Apply same hover effect */
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2); /* Darker shadow on hover */
+}
+
+/* Center alignment for modal text */
+#writeUpText, #questionText, #notificationContent p, #congratulationsContent, #instructionContent {
+    font-size: 16px;
+    color: #333;
+    text-align: center;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+#nextButton {
+    display: block;
+    margin: 0 auto;
+    background-color: white; /* White background */
+    color: #c938ff; /* Purple text */
+    font-family:"Lato", sans-serif;
+    border: 2px solid #c938ff;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+#nextButton:hover {
+    background-color: #c938ff; /* Purple background on hover */
+    color: white; /* White text on hover */
+    transform: scale(1.05); /* Slight scale effect on hover */
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2); /* Darker shadow on hover */
+}
+
+button {
+    background-color: white; /* White background */
+    color: #c938ff; /* Purple text */
+    border: 2px solid #c938ff;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-family: "Lato", sans-serif;
+    border-radius: 50px;
+    cursor: pointer;
+    text-align: center;
+    margin: 10px 0;
+    transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease; /* Smooth hover effect */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+button:hover {
+    background-color: #c938ff;
+    color: white; /* White text on hover */
+    transform: scale(1.05); /* Scale effect for hover */
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2); /* Darker shadow on hover */
+}
+
+/* Center alignment for answer options */
+#optionsContainer {
+    display: flex;
+    flex-direction: column; /* Stack buttons vertically */
+    align-items: center;   /* Center-align buttons */
+    justify-content: center; /* Center alignment in container */
+    margin-top: 20px; /* Add space above options */
+}
+
+#writeUpText, #questionText {
+    font-size: 16px;
+    color: #333;
+    text-align: left;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+h2 {
+    text-align: center;
+    margin-top: 0%;
+}
+
+#budget {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 10px 20px;
+    font-size: 18px;
+    font-family: "Lato", serif;
+    font-weight: bold;
+    color: #ffffff; /* White text */
+    background-color: #c938ff; /* Purple background */
+    border-radius: 30px; /* Rounded corners */
+    border: 2px solid #ffffff; /* White border for contrast */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    text-align: center;
+    user-select: none; /* Prevent text selection to enhance the 'non-clickable' look */
+}
+
+
+#noMoneyMessage {
+    position: absolute;
+    top: 30px; /* Adjust to place it below the budget text */
+    right: 10px;
+    color: red;
+    font-size: 50px;
+    font-family: "Lato",serif;
+    text-align: right;
+    display: none; /* Hidden by default */
+}
+
+button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+#backButton {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-family: "Lato", serif;
+    color: #c938ff;
+    text-decoration: none;
+    background-color: white; /* Match the background color of other buttons */
+    border: 2px solid #c938ff; /* Purple border */
+    border-radius: 50px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease; /* Smooth hover effects */
+}
+
+#backButton:hover {
+    background-color: #c938ff; /* Purple background on hover */
+    color: white; /* White text on hover */
+    transform: scale(1.05); /* Slight scale effect on hover */
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2); /* Stronger shadow on hover */
+}
+

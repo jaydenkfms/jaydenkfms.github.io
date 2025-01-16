@@ -1,0 +1,96 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>IMDA - Gen AI</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+                font-family: "Lato", sans-serif;
+                background-color: #3f0140;
+            }
+            #container {
+                width: 100%;
+                height: 100vh;
+                position: relative;
+                background-image: url('cover.jpg');
+                background-size: cover;
+                background-repeat: no-repeat;
+                background-position: center center;
+            }
+            h1 {
+                color: white;
+                font-size: 48px;
+                text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.8);
+                position: absolute;
+                top: 45%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                text-align: center;
+                margin: 0;
+                opacity: 0;
+                pointer-events:none;
+            }
+            #topButton {
+                position: absolute;
+                top: 21%;
+                left: 43%;
+                right: 43%;
+                padding: 8px 8px;
+                background-color: white;
+                color: #c938ff;
+                border: 2px solid #c938ff;
+                border-radius: 50px;
+                text-decoration: none;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
+            }
+            #topButton:hover {
+                background-color: #c938ff;
+                color: white;
+                transform: scale(1.05);
+                box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+            }
+            #topButton img {
+                width: 100%;
+                height: auto;
+                border-radius: 5px;
+
+            }
+            #startButton {
+                position: absolute;
+                top: 61%;
+                left: 31%;
+                padding: 15px 80px;
+                font-size: 26px;
+                background-color: white;
+                color: #c938ff;
+                border: 2px solid #c938ff;
+                border-radius: 50px;
+                text-decoration: none;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
+            }
+            #startButton:hover {
+                background-color: #c938ff;
+                color: white;
+                transform: scale(1.05);
+                box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+            }
+        </style>
+    </head>
+    <body>
+        <div id="container">
+            <a href="https://www.imda.gov.sg" target="_blank" id="topButton">
+                <img src="imdalogo.svg.png" alt="Visit IMDA Website">
+            </a>
+            <h1>Welcome to the IMDA Gen AI Learning Package!</h1>
+            <a href="page2.html" id="startButton">Click Here to Play</a>
+        </div>
+    </body>
+</html>
+

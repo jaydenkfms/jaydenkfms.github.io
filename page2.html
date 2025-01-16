@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IMDA - Gen AI</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Instruction Modal -->
+    <div id="instructionModal" style="display: none;">
+        <div id="instructionContent">
+            <h2>Find the Limited Edition Blind Box!</h2>
+            <p>Here’s how to play:</p>
+            <p>You've been given $6 in your wallet to buy blind boxes. There are 12 blind boxes for you to choose from. Each box will cost you $1 and you may select the box by clicking on it.</p>
+            <p>Each box you open contains a question related to Generative AI. To open the box you purchased, you must answer the question correctly.</p>
+            <p>Within the 12 boxes, 1 box contains a limited edition design.</p>
+            <p>To win this game, <strong>you must find the limited edition design.</strong></p>
+            <p>Good luck!</p>
+            <button id="startButton" onclick="closeInstructionModal()">Start</button>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div id="container">
+        <a href="index.html" id="backButton" aria-label="Back to Homepage">
+            &#8592; Back
+        </a>
+        <h1>Quiz for Gen AI</h1>
+        <div id="budget">Budget: $6</div>
+        <div class="grid" id="grid">
+            <div class="box" id="box1"></div>
+            <div class="box" id="box2"></div>
+            <div class="box" id="box3"></div>
+            <div class="box" id="box4"></div>
+            <div class="box" id="box5"></div>
+            <div class="box" id="box6"></div>
+            <div class="box" id="box7"></div>
+            <div class="box" id="box8"></div>
+            <div class="box" id="box9"></div>
+            <div class="box" id="box10"></div>
+            <div class="box" id="box11"></div>
+            <div class="box" id="box12"></div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmationModal" style="display: none;">
+        <div id="confirmationContent">
+            <p>Opening this box will cost you $1 from your budget. Do you want to proceed?</p>
+            <div style="text-align: center; margin-top: 20px;">
+                <button id="confirmButton" onclick="confirmBoxSelection()">Confirm</button>
+                <button id="cancelButton" onclick="cancelBoxSelection()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Write-up Modal -->
+    <div id="writeUpModal" style="display: none;">
+        <div id="writeUpContent">
+            <div id="writeUpText"></div>
+            <button id="nextButton" onclick="showQuestionModal()" disabled>Next</button>
+        </div>
+    </div>
+
+    <!-- Question Modal -->
+    <div id="questionModal" style="display: none;">
+        <p id="questionText"></p>
+        <div id="optionsContainer"></div>
+        <p id="feedbackMessage" style="color: red; font-weight: bold; display: none;"></p>
+    </div>
+
+    <div id="notificationModal" style="display: none;">
+        <div id="notificationContent">
+            <p id="notificationText"></p>
+            <button onclick="closeNotificationModal()">OK</button>
+        </div>
+    </div>
+
+    <div id="congratulationsModal" style="display:none">
+        <div id="congratulationsContent">
+            <h2>Congratulations!</h2>
+            <p>You found the limited edition design!</p>
+            <button onclick="closeCongratulationsModal()">OK</button>
+        </div>
+    </div>
+    <div id="overlay"></div>
+    <div id="hoverTooltip" style="display: none; position: absolute; background: grey; color: white; padding: 5px; border-radius: 4px; font-size: 12px; z-index: 1000;"></div>
+</body>
+
+    <script>
+        window.onload = () => {
+            const instructionModal = document.getElementById('instructionModal');
+            instructionModal.style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+        };
+
+        function closeInstructionModal() {
+            const instructionModal = document.getElementById('instructionModal');
+            instructionModal.style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+        }
+
+        const totalBoxes = 12;
+        const maxBudget = 6;
+        let budget = maxBudget;
+        let limitedEditionBox = null; // Limited edition box will be set dynamically after 3 boxes
+        let openedBoxes = new Set();
+        let usedQuestions = new Set();
+        let selectedBoxIndex = null;
+        let correctAnswersCount = 0; 
+
+
+        const questions = [
+            {
+                question: "Gen AI learns from data and can create new content like images, music and text.",
+                options: ["True", "False"],
+                correct: 0,
+                writeUp: `
+                    <h2>Introduction to AI and Gen AI</h2>
+                    <p><strong>Artificial intelligence (AI)</strong> - The science of teaching machines to mimic intelligent human behaviors, learning from data, using machine and deep learning.</p>
+                    <p><strong>Generative AI</strong> - A type of AI that specialises in creating new content rather than just processing existing information.</p>
+                `
+            },
+            {
+                question: "Which of the following are ‘ingredients’ of a high-quality prompt? ",
+                options: ["Persona, Task, Audience, Context, Format", "Personality, Audience, Contain, Format, Name"],
+                correct: 0,
+                writeUp: `
+                    <h2>Writing Prompts</h2>
+                    <p>An ideal prompt should have <strong>five</strong> elements.</p>
+                    <p><strong>Persona</strong> - Tells the AI the role or position you are in. Some examples of persona include “mother”, “teacher”, “student” etc.</p>
+                    <p><strong>Context</strong> - Provides a situation or background for the AI to ‘envision’, taking into account the circumstance in question.</p>
+                    <p><strong>Task</strong> - What you want the AI to do for you, what you would like it to generate.</p>
+                    <p><strong>Audience</strong> - Gives the AI a target audience to which the item generated is directed to or is for.</p>
+                    <p><strong>Format</strong> - How you would like the Ai-generated content to be presented. For instance, you could ask the AI to present the content in bullet form, or in a paragraph.</p>
+                `
+            },
+            {
+                question: "What is one risk associated with Gen AI?",
+                options: ["Traffic Jams", "Data Privary Concerns"],
+                correct: 1,
+                writeUp: `
+                    <h2>Concerns with Gen AI</h2>
+                    <p>Gen AI is capable of producing errors and false stories when they ‘hallucinate’.</p>
+                    <p>AI can create untrue information or misleading content like news articles, videos as well as pictures that look real when they are not.</p>
+                    <p>Other concerns with AI include <strong>Data Privacy concerns</strong>, as AI might not keep your personal data safe, risking privacy when private documents or information are uploaded.</p>
+                    <p>Using Gen AI could alos lead to <strong>copyright issues</strong>. It is hard to know who owns content generated by AI as the technology is improving fast.</p>
+                `
+            },
+            {
+                question: "Generative AI and Artificial Intelligence are not necessarily the same.",
+                options: ["True", "False"],
+                correct: 0,
+                writeUp: `
+                    <h2>Gen AI VS AI</h2>
+                    <p><strong>Artificial Intelligence</strong> was first introduced in 1956, referring to the science of teaching machines to mimic intelligent human behaviors.</p>
+                    <p><strong>Generative AI</strong> can be considered to be a <strong>subset</strong> of AI, a leap forward from traditional Ai which was initially focused on understanding and processing information.</p>
+                    <p>Gen AI on the other hand refers to computer programs using artificial intelligence to create new content.</p> 
+                `
+            },
+            {
+                question: "Search engines and Generative AI serve the same purpose to find existing information on the internet.",
+                options: ["True", "False"],
+                correct: 1,
+                writeUp: `
+                    <h2>Are Gen AI and Search Engines the same?</h2>
+                    <p>Generative AI can serve a multitude of purposes, such as be used to find anything online. However, Gen AI differs from Search Engines.</p>
+                    <p>Search Engines such as Google, Bing, and Yahoo Search find existing information on the internet based on keywords/phrases and bring you to the websites where you can look for the information.</p>
+                    <p>While Gen AI can also find existing information on the web, it's main use is to create entirely new content, as its name suggests.</p>
+                `
+            },
+            {
+                question: "Which of the following can Gen AI be used for?",
+                options: ["Text Generation", "Image Generation","Music Composition","All of the above"],
+                correct: 3,
+                writeUp: `
+                    <h2>Uses of Gen AI</h2>
+                    <p><strong>Gen AI</strong> can be used for a wide variety of purposes and functions, generating new content across different mediums.</p>
+                    <p>Gen AI like ChatGPT and Google Gemini can do <strong>text generation</strong>, coming up with stories, articles and poetry.</p>
+                    <p>It can also be used in <strong>image generation</strong>, generating unique and imaginative images from scratch, which Gen AI like Dall-E and Midjourney can do.</p>
+                    <p>Aside from the above, Gen AI can also <strong>compose original music</strong>, from mere melodies to entire soundtracks.</p>
+                `
+            },
+            {
+                question: "Deepfakes refer to only video material.",
+                options: ["True", "False"],
+                correct: 1,
+                writeUp: `
+                    <h2>Gen AI Deepfakes</h2>
+                    <p>Despite its perks, Gen AI is also risky and can cause AI-generated misinformation.</p>
+                    <p>While Ai-generated misinformation can take the shape of numerous different forms, one would be <strong>video and/or audio deepfakes</strong>.</p>
+                    <p><strong>Video deepfakes</strong> refer to making realistic videos by swapping faces, used for entertainment or spreading misinformation.</p>
+                    <p><strong>Audio deepfakes</strong> refer to creating voice recordings mimicking someone's voice, used for deception.</p>
+                `
+            },
+            {
+                question: "Which is NLB's S.U.R.E franework?",
+                options: ["Source, Understand, Rectify, Examine", "Source, Understand, Research, Evaluate"],
+                correct: 1,
+                writeUp: `
+                    <h2>NLB's S.U.R.E Framework</h2>
+                    <p>To safeguard against the risks presented by Generative AI, one can adopt the National Library Board's (NLB) <strong>S.U.R.E framework</strong>, looking for tell-tale signs or analyse audio-visual elements using tips from the Cyber-Security Agency of Singapore (CSA).
+                    <p><strong>Source</strong> - Make sure the source of information is credible and reliable, which can be done by looking for telltale signs, double checking references as well as verifying that the credit authors are real people.</p>
+                    <p><strong>Understanding</strong> - Know what you are reading, looking for facts rather than opinions. AI generated content might not necessarily be fake news, but rather have wider context and agendas behind them.</p>
+                    <p><strong>Research</strong> - Dig deeper beyond the initial source, investigating thoroughly before coming to a conclusion. Here, conventional fact-checking skills can still prove to be useful.</p>
+                    <p><strong>Evaluate</strong> - Find the balance and exercise fair judgement. As each story has two sides, it is important to understand some posts might be biased and do not reflect a complete picture of the story.</p>
+                `
+            },
+            {
+                question: "Which of the following is not necessarily a common feature across Gen AI Tools?",
+                options: ["Image Generation", "Response Area","Text Input Field"],
+                correct: 0,
+                writeUp: `
+                    <h2>Common Features in Gen AI Tools</h2>
+                    <p>While there are numerous types of Gen AI Tools around, several common features are generally shared amongst them, such as</p>
+                    <ul>
+                        <li><strong>Greetings and Introductions</strong> - A greeting from the application to the user at the start of the conversation</li>
+                        <li><strong>Response Area</strong> - Where the application responds with a text message/image for the user to read the response</li>
+                        <li><strong>Text Input Field</strong> - Where the user can type in messages or questions to the application</li>
+                        <li><strong>Voice/Image Input</strong> - User can speak to the application and/or insert an image</li>
+                        <li><strong>Chat History</strong> - Where the user can view previous chats with the software</li>
+                        <li><strong>Account Settings</strong> - User can change settings here such as the language used</li>
+                    </ul>
+                `
+            },
+            {
+                question: "What are some ways to make a better prompt?",
+                options: ["Explain your prompt lengthily","Be specific and iterate","Both"],
+                correct: 1,
+                writeUp: `
+                    <h2>How to make better prompts</h2>
+                    <p>To prompt AI better, one can attempt to do the following:</p>
+                    <ul>
+                        <li><strong>Use natural language</strong> - Write as though you're speaking to another person</li>
+                        <li><strong>Be specific and iterate</strong> - Tell the Gen AI tool what you need it to do, providing as much context as possible</li>
+                        <li><strong>Be concise and clear</strong> - Start with clear, direct questions or statements on what you want the Gen Ai tool to do</li>
+                        <li><strong>Keep the conversation going</strong> - Fine-tune prompts if required and use follow-up prompts to get a better response</li>
+                    </ul>
+                `
+            },
+        ];
+
+        function getRandomQuestion() {
+            if (usedQuestions.size === questions.length) {
+                usedQuestions.clear();
+            }
+
+            let questionIndex;
+            do {
+                questionIndex = Math.floor(Math.random() * questions.length);
+            } while (usedQuestions.has(questionIndex));
+
+            usedQuestions.add(questionIndex);
+            return questions[questionIndex];
+        }
+
+        function handleBoxClick(index) {
+            if (budget === 0) return; // Prevent further clicks when budget is 0
+            if (openedBoxes.has(index)) return;
+
+            selectedBoxIndex = index;
+
+            const confirmationModal = document.getElementById('confirmationModal');
+            confirmationModal.style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+        }
+
+
+        function confirmBoxSelection() {
+    const confirmationModal = document.getElementById('confirmationModal');
+    confirmationModal.style.display = 'none';
+    document.getElementById('overlay').style.display = 'none';
+
+    if (selectedBoxIndex !== null) {
+        budget--;
+        document.getElementById('budget').textContent = `Budget: $${budget}`;
+
+        // Check if budget is zero and display the message
+        if (budget === 0) {
+            const noMoneyMessage = document.getElementById('noMoneyMessage');
+            if (noMoneyMessage) noMoneyMessage.style.display = 'none';
+
+        }
+
+        const questionData = getRandomQuestion();
+        const writeUpModal = document.getElementById('writeUpModal');
+        const writeUpText = document.getElementById('writeUpText');
+
+        writeUpText.innerHTML = questionData.writeUp || "No write-up available for this question.";
+        setTimeout(() => {
+            writeUpModal.scrollTop = 0;
+            writeUpText.scrollTop = 0;
+        }, 0);
+
+        displayWriteUpModal();
+        document.getElementById('overlay').style.display = 'block';
+
+        writeUpModal.dataset.currentBox = selectedBoxIndex;
+        writeUpModal.dataset.currentQuestion = JSON.stringify(questionData);
+
+        selectedBoxIndex = null;
+    }
+}
+
+
+        function cancelBoxSelection() {
+            const confirmationModal = document.getElementById('confirmationModal');
+            confirmationModal.style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+            selectedBoxIndex = null;
+        }
+
+        function enableNextButton() {
+    const nextButton = document.getElementById('nextButton');
+    nextButton.disabled = true;
+    nextButton.style.opacity = '0.5';
+    buttonDisabledTime = Date.now(); // Set the time the button was disabled
+
+    setTimeout(() => {
+        nextButton.disabled = false;
+        nextButton.style.opacity = '1';
+    }, 5000);
+}
+
+const nextButton = document.getElementById('nextButton');
+
+nextButton.addEventListener('mouseover', function (event) {
+    const tooltip = document.getElementById('hoverTooltip');
+    if (this.disabled) {
+        const remainingTime = Math.max(0, (5000 - (Date.now() - buttonDisabledTime)) / 1000); // Calculate remaining time
+        tooltip.textContent = `${remainingTime.toFixed(1)} seconds remaining`;
+        tooltip.style.display = 'block';
+        tooltip.style.left = `${event.pageX + 10}px`;
+        tooltip.style.top = `${event.pageY + 10}px`;
+        console.log('Button disabled:', this.disabled);
+
+
+        // Update the tooltip content dynamically
+        this.tooltipInterval = setInterval(() => {
+            const timeLeft = Math.max(0, (5000 - (Date.now() - buttonDisabledTime)) / 1000);
+            tooltip.textContent = `${timeLeft.toFixed(1)} seconds remaining`;
+            if (timeLeft <= 0) {
+                clearInterval(this.tooltipInterval);
+                tooltip.style.display = 'none';
+            }
+        }, 100);
+    }
+});
+
+nextButton.addEventListener('mouseout', function () {
+    const tooltip = document.getElementById('hoverTooltip');
+    tooltip.style.display = 'none';
+    clearInterval(this.tooltipInterval); // Stop updating the tooltip
+});
+
+// Call this function when the write-up modal is displayed
+function displayWriteUpModal() {
+    const writeUpModal = document.getElementById('writeUpModal');
+    writeUpModal.style.display = 'block';
+    document.getElementById('overlay').style.display = 'block';
+
+    enableNextButton(); // Disable the Next button and set the timer
+}
+
+
+        function showQuestionModal() {
+            const writeUpModal = document.getElementById('writeUpModal');
+            writeUpModal.style.display = 'none';
+
+            const questionModal = document.getElementById('questionModal');
+            const questionData = JSON.parse(writeUpModal.dataset.currentQuestion);
+
+            const questionText = document.getElementById('questionText');
+            const optionsContainer = document.getElementById('optionsContainer');
+
+            questionText.textContent = questionData.question || "No question available.";
+            optionsContainer.innerHTML = "";
+            questionData.options.forEach((option, i) => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.onclick = () => submitAnswer(i === questionData.correct, parseInt(writeUpModal.dataset.currentBox));
+                optionsContainer.appendChild(button);
+            });
+
+            questionModal.style.display = 'block';
+        }
+
+        function submitAnswer(isCorrect, index) {
+    const questionModal = document.getElementById('questionModal');
+    const feedbackMessage = document.getElementById('feedbackMessage');
+    const overlay = document.getElementById('overlay');
+
+    if (isCorrect) {
+        openBox(index); // Open the selected box
+
+        questionModal.style.display = 'none';
+        overlay.style.display = 'none';
+
+        if (feedbackMessage) feedbackMessage.style.display = 'none';
+
+        // Notify the user about non-limited edition boxes
+        if (index !== limitedEditionBox) {
+            if (limitedEditionBox === null) {
+                showNotificationModal("You answered correctly, but this is not the limited edition design. Try another box!");
+            } else {
+                showNotificationModal("You answered correctly, but this is not the limited edition design. Try another box!");
+            }
+        }
+    } else {
+        if (feedbackMessage) {
+            feedbackMessage.style.display = 'block';
+            feedbackMessage.textContent = "Wrong answer! Please try again.";
+        }
+    }
+}
+
+
+
+
+        function showNotificationModal(message) {
+            const notificationModal = document.getElementById('notificationModal');
+            const notificationText = document.getElementById('notificationText');
+
+    // Set the message and display the modal
+            notificationText.textContent = message;
+            notificationModal.style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+}
+
+        function closeNotificationModal() {
+            const notificationModal = document.getElementById('notificationModal');
+            notificationModal.style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+}
+
+function openBox(index) {
+    if (openedBoxes.has(index)) {
+        console.log(`Box ${index} has already been opened.`);
+        return;
+    }
+
+    // Add the box to the opened set
+    openedBoxes.add(index);
+
+    // Set the limited edition box after 3 boxes are opened
+    if (openedBoxes.size === 3 && limitedEditionBox === null) {
+        limitedEditionBox = Math.floor(Math.random() * totalBoxes);
+        console.log(`Limited edition box set: ${limitedEditionBox}`);
+    }
+
+    const box = document.querySelector(`.box:nth-child(${index + 1})`);
+
+    if (limitedEditionBox !== null && index === limitedEditionBox) {
+        // Handle limited edition box
+        box.classList.add('correct');
+        box.textContent = "🎉";
+        showCongratulationsModal();
+        endGame(true);
+    } else {
+        // Handle non-limited edition boxes
+        box.classList.add('wrong');
+        box.textContent = "💔";
+    }
+}
+
+
+function showCongratulationsModal() {
+    const congratulationsModal = document.getElementById('congratulationsModal');
+    const overlay = document.getElementById('overlay');
+
+    // Ensure modal and overlay are displayed
+    congratulationsModal.style.display = 'block';
+    overlay.style.display = 'block';
+
+    console.log("Congratulations modal displayed.");
+}
+
+function closeCongratulationsModal() {
+    const congratulationsModal = document.getElementById('congratulationsModal');
+    const overlay = document.getElementById('overlay');
+
+    // Hide the modal and overlay
+    congratulationsModal.style.display = 'none';
+    overlay.style.display = 'none';
+
+    console.log("Congratulations modal closed.");
+}
+
+
+
+
+
+
+
+        
+
+function endGame(success) {
+        const limitedEditionBoxElement = document.querySelector(`.box:nth-child(${limitedEditionBox + 1})`);
+
+        if (!success && limitedEditionBoxElement) {
+            limitedEditionBoxElement.classList.add('revealed');
+            limitedEditionBoxElement.textContent = "🎉";
+        }
+
+        document.querySelectorAll('.box').forEach(box => {
+            box.removeEventListener('click', handleBoxClick);
+        });
+    }
+
+    document.querySelectorAll('.box').forEach((box, index) => {
+    box.addEventListener('mouseenter', function (event) {
+        if (budget === 0) {
+            const tooltip = document.getElementById('hoverTooltip');
+            tooltip.textContent = "NO MORE MONEY!"; // Tooltip text
+            tooltip.style.display = 'block';
+            tooltip.style.left = `${event.pageX + 10}px`;
+            tooltip.style.top = `${event.pageY + 10}px`;
+        }
+    });
+
+    box.addEventListener('mousemove', function (event) {
+        if (budget === 0) {
+            const tooltip = document.getElementById('hoverTooltip');
+            tooltip.style.left = `${event.pageX + 10}px`;
+            tooltip.style.top = `${event.pageY + 10}px`;
+        }
+    });
+
+    box.addEventListener('mouseleave', function () {
+        const tooltip = document.getElementById('hoverTooltip');
+        tooltip.style.display = 'none'; // Hide tooltip
+    });
+
+    // Existing click event
+    box.addEventListener('click', () => handleBoxClick(index));
+});
+
+    </script>
+</html>
+
